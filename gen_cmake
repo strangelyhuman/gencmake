@@ -1,0 +1,53 @@
+#!/bin/bash
+# CMakeLists project generator
+# Version: 0.1
+# Owner: AdiD
+
+# Functions
+usage()
+{
+	echo
+	echo "Usage: gen_cmake <project_name>"
+	echo "Example:"
+	echo "     gen_cmake Project1"
+	echo "     Generates a folder with a CMakeLists.txt referencing the <project_name>."
+	echo "     Note: Restricted to CPP source files."
+	echo
+}
+
+# Generate a subfolder for every project
+
+CMAKE_FILE="CMakeLists.txt"
+CMAKE_ARG=$1
+
+if [[ $CMAKE_ARG == "-h" || $CMAKE_ARG == "--help" ]]; then
+	usage
+	exit
+fi
+
+if [ -f $CMAKE_FILE ]; then
+	rm $CMAKE_FILE
+	touch $CMAKE_FILE
+fi
+
+if [ ! -d $CMAKE_ARG ]; then
+	mkdir $CMAKE_ARG
+fi
+
+cd $CMAKE_ARG
+
+if [ ! -d build ]; then 
+	mkdir build
+else
+	rm -rf build
+	mkdir build
+fi
+
+echo "cmake_minimum_required(VERSION 2.8)" >> $CMAKE_FILE
+echo "project( $CMAKE_ARG )" >> $CMAKE_FILE
+echo "find_package( OpenCV REQUIRED )" >> $CMAKE_FILE
+echo "include_directories( "\$\{OpenCV_INCLUDE_DIRS\}" )" >> $CMAKE_FILE
+echo "add_executable( $CMAKE_ARG "${CMAKE_ARG}.cc" )" >> $CMAKE_FILE
+echo "target_link_libraries( $CMAKE_ARG "\$\{OpenCV_LIBS\}" )" >> $CMAKE_FILE
+
+echo "Generated Project $CMAKE_ARG on $(date)"
